@@ -23,6 +23,10 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
+            "allowedCommonJsDependencies": [
+              "sockjs-client",
+              "crypto-js"
+            ],
             "outputPath": "dist",
             "index": "src/index.html",
             "browser": "src/main.ts",
