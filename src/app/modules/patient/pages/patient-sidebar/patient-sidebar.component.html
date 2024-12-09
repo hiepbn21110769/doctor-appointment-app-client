@@ -1,0 +1,54 @@
+<!-- Profile Sidebar -->
+<div >
+    <div class="profile-sidebar">
+      <div class="widget-profile pro-widget-content">
+        <div class="profile-info-widget">
+          <div class="booking-doc-img">
+            <p-image [src]="patientProfile?.avatarFilePath || 'assets/images/doctors/doctor-thumb-02.jpg'"
+            alt="Doctor Image" width="100%"  [preview]="true"/>
+          </div>
+          <div class="profile-det-info">
+            <h3>{{patientProfile.firstName}} {{patientProfile.lastName}}</h3>
+            <div class="patient-details">
+              <h5><i class="fas fa-birthday-cake"></i> {{patientProfile.dateOfBirth | dateFormat}}</h5>
+              <h5 class="mb-0">
+                <i class="fas fa-map-marker-alt"></i> {{patientProfile.address}}
+              </h5>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dashboard-widget">
+        <nav class="dashboard-menu">
+          <ul>
+            <li routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+              <a routerLink="/patient/dashboard">
+                <i class="fas fa-columns"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li routerLinkActive="active">
+              <a routerLink="/patient/profile">
+                <i class="fas fa-user-cog"></i>
+                <span>Profile Settings</span>
+              </a>
+            </li>
+            <li routerLinkActive="active">
+              <a routerLink="/patient/change-password">
+                <i class="fas fa-lock"></i>
+                <span>Change Password</span>
+              </a>
+            </li>
+            <li>
+              <a routerLink="" (click)="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+  <!-- / Profile Sidebar -->
+  

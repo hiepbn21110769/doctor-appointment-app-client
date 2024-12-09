@@ -1,0 +1,73 @@
+<div>
+    <p-iconField iconPosition="left">
+        <p-inputIcon styleClass="pi pi-search" />
+        <input type="text" pInputText placeholder="Enter Name Patient" 
+        style="width: 49%; height: 40px; font-size: 16px; margin-bottom: 10px;"
+        [(ngModel)]="searchPatientName" 
+            (input)="onSearchChange()" />
+    </p-iconField>
+    <h6 style="color:rgb(107, 114, 128) ; font-size: 16px;">Found
+        <span style="color: rgb(20, 101, 214);">
+            {{totalSize}}
+        </span>results</h6>
+    <div class="card">
+        <div class="col-md-13 col-lg-14 col-xl-15">
+            <div class="row row-grid">
+                
+                <div *ngFor="let patient of patients" class="col-md-6 col-lg-4 col-xl-3">
+
+                    <div class="card widget-profile pat-widget-profile">
+                        <div class="card-body">
+                            <div class="pro-widget-content">
+                                <div class="profile-info-widget">
+
+                                    <p-image class="booking-doc-img"
+                                        [src]="patient?.avatarFilePath || '../../../../../assets/images/patients/patient10.jpg'"
+                                        alt="Doctor Image" width="100%" [preview]="true" />
+
+                                    <div class="profile-det-info">
+                                        <h3><a class="external-link" (click)="viewPatientProfile(patient.id)">{{patient.fullName}}</a></h3>
+                                        <!-- <div class="patient-details">
+                                            <h5><b>Patient ID :</b> {{patient.id}}</h5>
+                                            <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i>{{patient.address}}
+                                            </h5>
+                                        </div> -->
+                                        <div class="patient-details">
+                                            <h5>
+                                                <span *ngIf="patient.id; else guestLabel"><b>Patient ID :</b> {{ patient.id }}</span>
+                                                <ng-template #guestLabel>Guest</ng-template>
+                                            </h5>
+                                            <h5 class="mb-0" *ngIf="patient.address"><i class="fas fa-map-marker-alt"></i>{{patient.address}}</h5>
+                                            <h5 class="mb-0" *ngIf="!patient.address"><i class="fas fa-map-marker-alt"></i>No Address</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="patient-info" >
+                                <ul>
+                                    <li>Phone <span>{{patient.phone}}</span></li>
+                                    <li >Age
+                                        <span *ngIf="patient.dateOfBirth">
+                                            {{ calculateAge(patient.dateOfBirth) }} Years,
+                                            {{ patient.gender ? 'Male' : 'Female' }}
+                                        </span>
+                                        <span *ngIf="!patient.dateOfBirth">
+                                            Unknown
+                                        </span>
+                                    </li>
+                                </ul>
+                                    
+                               
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <!-- Paginator Component -->
+    <p-paginator [rows]="pageSize" [totalRecords]="totalPatients" [rowsPerPageOptions]="[4,8]"
+    (onPageChange)="handlePageEvent($event)" [showCurrentPageReport]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"></p-paginator>
+</div>

@@ -1,0 +1,535 @@
+<div class="row">
+  <div class="col-sm-0 col-md-0 col-lg-1 col-xl-2"></div>
+  <div class="col-sm-12 col-md-12 col-lg-10 col-xl-8">
+    <div class="card">
+      <div class="card-body p-0">
+        <mat-stepper
+          [linear]="true"
+          #stepper
+          class="p-2"
+          style="background-color: #ffffff"
+        >
+          <form [formGroup]="formBooking">
+            <mat-step
+              label="Fill Booking Information"
+              [stepControl]="formBooking"
+            >
+              <div class="card mt-2">
+                <div class="card-header">
+                  <div class="row d-flex justify-content-between">
+                    <h4 class="card-title col">Booking Information</h4>
+                    <a
+                      class="col d-flex justify-content-end"
+                      (click)="showDialog()"
+                      *ngIf="!(isLogged$ | async)"
+                      >Login as patient</a
+                    >
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="booking-doc-info">
+                    <p-image
+                      [src]="
+                        doctorSelected != undefined
+                          ? doctorSelected.avatarFilePath
+                          : '/assets/images/user.png'
+                      "
+                      alt="Image"
+                      width="150"
+                      [preview]="true"
+                      class="pe-3"
+                    />
+                    <div class="booking-info">
+                      <h5>
+                        <a (click)="viewDoctorProfile(doctorSelected.id)">{{
+                          doctorSelected != undefined
+                            ? "Dr. " + doctorSelected.fullName
+                            : "Unknow Doctor"
+                        }}</a>
+                      </h5>
+                      <p class="doc-speciality">
+                        {{ doctorSelected?.specialty?.specialtyName }}
+                      </p>
+                      <div class="rating">
+                        <i
+                          class="fas fa-star"
+                          *ngFor="let star of [1, 2, 3, 4, 5]; let i = index"
+                          [ngClass]="{
+                            filled: doctorSelected?.averageRating >= i + 1
+                          }"
+                        ></i>
+                        <span class="d-inline-block average-rating"
+                          >({{ doctorSelected?.numberOfFeedbacks }})</span
+                        >
+                      </div>
+                      <p class="text-muted mb-0">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{ doctorSelected?.address }}
+                      </p>
+                    </div>
+                  </div>
+                  <p-divider />
+                  <div class="pt-2">
+                    <h5>Doctor</h5>
+                    <div class="row">
+                      <mat-form-field
+                        appearance="outline"
+                        class="col-sm-12 col-md-6 col-lg-6 col-xl-6"
+                      >
+                        <mat-label>Specialty</mat-label>
+                        <input
+                          type="text"
+                          placeholder="Pick one"
+                          matInput
+                          formControlName="specialty"
+                          [matAutocomplete]="autoSpecialty"
+                          (blur)="specialtyChange()"
+                          required
+                          tabindex="1"
+                        />
+                        <mat-autocomplete #autoSpecialty="matAutocomplete">
+                          @for (specialty of filteredSpecialties | async; track
+                          specialty) {
+                          <mat-option [value]="specialty.specialtyName">{{
+                            specialty.specialtyName
+                          }}</mat-option>
+                          }
+                        </mat-autocomplete>
+                        <mat-error
+                          *ngIf="
+                            formBooking.controls['specialty'].getError(
+                              'required'
+                            )
+                          "
+                        >
+                          Specialty is required.
+                        </mat-error>
+                      </mat-form-field>
+                      <mat-form-field
+                        appearance="outline"
+                        class="col-sm-12 col-md-6 col-lg-6 col-xl-6"
+                      >
+                        <mat-label>Doctor</mat-label>
+                        <input
+                          type="text"
+                          placeholder="Choose doctor"
+                          matInput
+                          formControlName="doctor"
+                          [matAutocomplete]="autoDoctor"
+                          (blur)="selectDoctor()"
+                          required
+                          tabindex="2"
+                        />
+                        <mat-autocomplete #autoDoctor="matAutocomplete">
+                          @for (doctor of filteredDoctors | async; track doctor)
+                          {
+                          <mat-option [value]="doctor.fullName">{{
+                            doctor.fullName
+                          }}</mat-option>
+                          }
+                        </mat-autocomplete>
+                        <mat-error
+                          *ngIf="
+                            formBooking.controls['doctor'].getError('required')
+                          "
+                        >
+                          Doctor is required.
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                    <h5>Patient</h5>
+                    <div>
+                      <div class="row">
+                        <mat-form-field
+                          appearance="outline"
+                          class="col-sm-12 col-md-6 col-lg-6 col-xl-6 pb-1"
+                        >
+                          <mat-label>First Name</mat-label>
+                          <input
+                            matInput
+                            placeholder="Ex. Justin"
+                            formControlName="firstName"
+                            required
+                            tabindex="3"
+                            [readonly]="isLogged$ | async"
+                          />
+                          <mat-error
+                            *ngIf="
+                              formBooking.controls['firstName'].getError(
+                                'required'
+                              )
+                            "
+                          >
+                            First name is required.
+                          </mat-error>
+                          <mat-error
+                            *ngIf="
+                              formBooking.controls['firstName'].getError('name')
+                            "
+                          >
+                            First name is invalid.
+                          </mat-error>
+                        </mat-form-field>
+                        <mat-form-field
+                          appearance="outline"
+                          class="col-sm-12 col-md-6 col-lg-6 col-xl-6 pb-1"
+                        >
+                          <mat-label>Last Name</mat-label>
+                          <input
+                            matInput
+                            placeholder="Ex. Timberlake"
+                            formControlName="lastName"
+                            required
+                            tabindex="4"
+                            [readonly]="isLogged$ | async"
+                          />
+                          <mat-error
+                            *ngIf="
+                              formBooking.controls['lastName'].getError(
+                                'required'
+                              )
+                            "
+                          >
+                            Last name is required.
+                          </mat-error>
+                          <mat-error
+                            *ngIf="
+                              formBooking.controls['lastName'].getError('name')
+                            "
+                          >
+                            Last name is invalid.
+                          </mat-error>
+                        </mat-form-field>
+                      </div>
+                      <div class="row">
+                        <mat-form-field
+                          appearance="outline"
+                          class="col-sm-12 col-md-6 col-lg-6 col-xl-6 pb-1"
+                        >
+                          <mat-label>Phone</mat-label>
+                          <input
+                            matInput
+                            placeholder="Ex. 0900101010"
+                            formControlName="phone"
+                            required
+                            tabindex="5"
+                            [readonly]="isLogged$ | async"
+                          />
+                          <mat-error
+                            *ngIf="
+                              formBooking.controls['phone'].getError('required')
+                            "
+                          >
+                            Phone is required.
+                          </mat-error>
+                          <mat-error
+                            *ngIf="
+                              formBooking.controls['phone'].getError('digit')
+                            "
+                          >
+                            Phone must contains numbers.
+                          </mat-error>
+                          <mat-error
+                            *ngIf="
+                              formBooking.controls['phone'].getError(
+                                'minLength'
+                              ) ||
+                              formBooking.controls['phone'].getError(
+                                'maxLength'
+                              )
+                            "
+                          >
+                            Phone length is from 8-15 digits.
+                          </mat-error>
+                        </mat-form-field>
+                        <mat-form-field
+                          appearance="outline"
+                          class="col-sm-12 col-md-6 col-lg-6 col-xl-6 pb-1"
+                        >
+                          <mat-label>Email</mat-label>
+                          <input
+                            matInput
+                            placeholder="Ex. example@gmail.com"
+                            formControlName="email"
+                            required
+                            tabindex="6"
+                            [readonly]="isLogged$ | async"
+                          />
+                          <mat-error
+                            *ngIf="
+                              formBooking.controls['email'].getError('required')
+                            "
+                          >
+                            Email is required.
+                          </mat-error>
+                          <mat-error
+                            *ngIf="
+                              formBooking.controls['email'].getError('email')
+                            "
+                          >
+                            Email is invalid.
+                          </mat-error>
+                        </mat-form-field>
+                      </div>
+                      <mat-form-field
+                        appearance="outline"
+                        class="full-width pb-1"
+                      >
+                        <mat-label>Reason</mat-label>
+                        <textarea
+                          matInput
+                          placeholder="Ex. Oral..."
+                          formControlName="reason"
+                          required
+                          tabindex="7"
+                        ></textarea>
+                        <mat-error
+                          *ngIf="
+                            formBooking.controls['reason'].getError('required')
+                          "
+                        >
+                          Reason is required.
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between mx-2">
+                <button
+                  mat-raised-button
+                  extended
+                  matStepperNext
+                  (click)="closeBooking()"
+                >
+                  <mat-icon>close</mat-icon>
+                  Cancel
+                </button>
+                <button
+                  mat-flat-button
+                  extended
+                  matStepperNext
+                  [disabled]="formBooking.invalid"
+                  (click)="getAppointmentsBooked()"
+                >
+                  <mat-icon iconPositionEnd>chevron_right</mat-icon>
+                  Next
+                </button>
+              </div>
+            </mat-step>
+          </form>
+          <mat-step [stepControl]="formBookingDate">
+            <ng-template matStepLabel
+              ><div (click)="getAppointmentsBooked()">
+                Choose Booking Date
+              </div></ng-template
+            >
+            <!-- schedule -->
+            <app-schedule
+              [isReschedule]="false"
+              [doctorSelected]="doctorSelected"
+              (selectedSlot)="selectBookingDate($event)"
+            ></app-schedule>
+            <!-- schedule -->
+            <!-- /Schedule Widget -->
+            <div class="d-flex justify-content-between mx-2">
+              <button mat-raised-button extended matStepperPrevious>
+                <mat-icon>chevron_left</mat-icon>
+                Back
+              </button>
+              <button
+                mat-flat-button
+                extended
+                matStepperNext
+                [disabled]="formBookingDate.invalid || !timeSlotSelected"
+              >
+                <mat-icon iconPositionEnd>chevron_right</mat-icon>
+                Next
+              </button>
+            </div>
+          </mat-step>
+          <mat-step label="Confirm and Done">
+            <!-- Booking Summary -->
+            <div class="card booking-card mt-2">
+              <div class="card-header row">
+                <h4 class="card-title col">Booking Summary</h4>
+                <a
+                  class="col d-flex justify-content-end"
+                  (click)="showDialog()"
+                  *ngIf="!(isLogged$ | async)"
+                  >Login as patient</a
+                >
+              </div>
+              <div class="card-body">
+                <!-- Booking Doctor Info -->
+                <div class="booking-doc-info">
+                  <p-image
+                    [src]="
+                      doctorSelected != undefined
+                        ? doctorSelected.avatarFilePath
+                        : '/assets/images/user.png'
+                    "
+                    alt="Image"
+                    width="150"
+                    [preview]="true"
+                    class="pe-3"
+                  />
+                  <div class="booking-info">
+                    <h4>
+                      <a href="">{{
+                        doctorSelected != undefined
+                          ? "Dr. " + doctorSelected.fullName
+                          : "Unknow Doctor"
+                      }}</a>
+                    </h4>
+                    <div class="rating">
+                      <i class="fas fa-star filled"></i>
+                      <i class="fas fa-star filled"></i>
+                      <i class="fas fa-star filled"></i>
+                      <i class="fas fa-star filled"></i>
+                      <i class="fas fa-star"></i>
+                      <span class="d-inline-block average-rating">35</span>
+                    </div>
+                    <div class="clinic-details">
+                      <p class="doc-location">
+                        <i class="fas fa-map-marker-alt"></i> Newyork, USA
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <!-- Booking Doctor Info -->
+                <p-divider />
+                <div class="booking-summary">
+                  <div class="booking-item-wrap">
+                    <ul class="booking-fee">
+                      <li>
+                        Specialty<span>{{
+                          formBooking.get("specialty").value
+                        }}</span>
+                      </li>
+                      <li>
+                        Doctor Name<span
+                          >Dr. {{ doctorSelected?.fullName }}</span
+                        >
+                      </li>
+                      <li>
+                        Patient Name<span>{{
+                          formBooking.get("firstName")?.value +
+                            " " +
+                            formBooking.get("lastName")?.value
+                        }}</span>
+                      </li>
+                      <li>
+                        Phone<span>{{ formBooking.get("phone")?.value }}</span>
+                      </li>
+                      <li>
+                        Email<span>{{ formBooking.get("email")?.value }}</span>
+                      </li>
+                    </ul>
+                    <ul class="booking-date">
+                      <li>
+                        Date Booking<span>{{
+                          timeSlotSelected?.date | date
+                        }}</span>
+                      </li>
+                      <li>
+                        Time Booking<span>{{ timeSlotSelected?.time }}</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <!-- /Booking Summary -->
+              </div>
+            </div>
+            <div class="d-flex justify-content-between mx-2">
+              <button mat-raised-button extended matStepperPrevious [disabled]="loading">
+                <mat-icon>chevron_left</mat-icon>
+                Back
+              </button>
+              <div class="spinner-container" *ngIf="loading">
+                <p-progressSpinner styleClass="w-2rem h-2rem" strokeWidth="3" fill="var(--surface-ground)"
+                  animationDuration=".5s">
+                </p-progressSpinner>
+              </div>
+              <button
+                mat-flat-button
+                extended
+                matStepperNext
+                (click)="submitAppointment()"
+                [disabled]="loading"
+              >
+                <mat-icon iconPositionEnd>check</mat-icon>
+                Done
+              </button>
+            </div>
+          </mat-step>
+        </mat-stepper>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-0 col-md-0 col-lg-1 col-xl-2"></div>
+</div>
+
+<p-dialog
+  header="Login"
+  [modal]="true"
+  [(visible)]="modalVisible"
+  [style]="{ width: '25rem' }"
+  (onHide)="closeDialog()"
+>
+  <form [formGroup]="formLogin">
+    <mat-error *ngIf="loginErrorMessage" class="pt-0 pb-1">{{
+      loginErrorMessage
+    }}</mat-error>
+    <div class="d-flex align-items-center mt-2 mb-3">
+      <mat-form-field class="full-width" appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" required #emailInput />
+        <mat-error *ngIf="formLogin.controls['email'].hasError('email')"
+          >Email is invalid.</mat-error
+        >
+        <mat-error *ngIf="formLogin.controls['email'].hasError('required')"
+          >Email is required.</mat-error
+        >
+      </mat-form-field>
+    </div>
+    <div class="d-flex align-items-center mb-2">
+      <mat-form-field class="full-width" appearance="outline">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          formControlName="password"
+          [type]="showPass ? 'text' : 'password'"
+          required
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="showPassword()"
+          type="button"
+        >
+          <mat-icon>{{ showPass ? "visibility" : "visibility_off" }}</mat-icon>
+        </button>
+        <mat-error *ngIf="formLogin.controls['password'].hasError('required')"
+          >Password is required.</mat-error
+        >
+      </mat-form-field>
+    </div>
+    <a class="d-flex justify-content-end mb-2" (click)="navigateToRegister()"
+      >Register?</a
+    >
+    <div class="d-flex justify-content-between">
+      <button
+        mat-raised-button
+        severity="secondary"
+        type="button"
+        (click)="closeDialog()"
+      >
+        Cancel
+      </button>
+      <button mat-flat-button (click)="login()" [disabled]="formLogin.invalid">
+        Login
+      </button>
+    </div>
+  </form>
+</p-dialog>
