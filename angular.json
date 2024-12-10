@@ -27,7 +27,7 @@
               "sockjs-client",
               "crypto-js"
             ],
-            "outputPath": "dist",
+            "outputPath": "dist/frontend",
             "index": "src/index.html",
             "browser": "src/main.ts",
            
