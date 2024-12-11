@@ -1,2 +1,2 @@
-export const host = 'https://ac36-14-161-46-255.ngrok-free.app';
+export const host = 'https://nw06ts0x-8080.asse.devtunnels.ms';
 export const feAPI = 'http://localhost:4200';
