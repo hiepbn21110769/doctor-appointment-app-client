@@ -24,7 +24,16 @@ export class DoctorService {
   }
 
   getDoctorDetail(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/detail/${id}`);
+    return this.http.get(`${this.baseUrl}/detail/${id}`).pipe(
+      catchError((error: HttpErrorResponse) => {
+          // Check if response is HTML (check content-type or check error message)
+          if (error.headers.get('Content-Type')?.includes('text/html')) {
+            // If it's HTML, we can return the HTML text for further processing
+            return throwError(() => new Error(error.error.text));
+          }
+        return throwError(() => error);
+      })
+    );
   }
 
   searchDoctors(
